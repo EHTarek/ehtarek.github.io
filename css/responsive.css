@@ -1,0 +1,474 @@
+/* ==========================================================================
+   responsive.css
+   Responsive layer on top of Bootstrap 4.1 + the base template (style.css).
+   Loaded LAST so it can correct the template's fixed pixel sizing.
+
+   Breakpoints follow Bootstrap 4:
+     xs <576  |  sm >=576  |  md >=768  |  lg >=992  |  xl >=1200
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------------------
+   1. Foundations
+   -------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+	/* Fixed-px padding in the template pushed elements past their columns. */
+	box-sizing: border-box;
+}
+
+html {
+	-webkit-text-size-adjust: 100%;
+}
+
+img,
+svg,
+video,
+iframe {
+	max-width: 100%;
+	height: auto;
+}
+
+/* Long unbroken strings (URLs, package names) must not widen a column. */
+p,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+.heading,
+.resume-wrap {
+	overflow-wrap: break-word;
+	word-wrap: break-word;
+}
+
+/* The template sets several hero/section paddings in px; on narrow screens
+   they consume most of the viewport. Scale them with the viewport instead. */
+@media (max-width: 575.98px) {
+	.ftco-section {
+		padding: 4em 0;
+	}
+}
+
+
+/* --------------------------------------------------------------------------
+   2. Navbar
+   Brand + toggler together measured ~360px, so at <=400px they wrapped onto
+   two rows and doubled the navbar height.
+   -------------------------------------------------------------------------- */
+
+/* NB: the container must keep flex-wrap: wrap — .navbar-collapse relies on its
+   flex-basis: 100% to drop onto its own line when the menu opens. The fix for
+   the two-row navbar is to make the brand narrow enough to sit beside the
+   toggler, not to stop the container wrapping. */
+
+.navbar-brand {
+	min-width: 0;
+	flex: 0 1 auto;
+}
+
+.navbar-brand span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.navbar-toggler {
+	flex: 0 0 auto;
+}
+
+@media (max-width: 575.98px) {
+	.navbar-brand {
+		font-size: 1.05rem;
+		gap: .45rem;
+	}
+
+	.navbar-brand .brand-logo {
+		width: 28px;
+		height: 28px;
+		border-radius: 7px;
+	}
+
+	.navbar-toggler {
+		font-size: 15px;
+		padding: .35rem .5rem;
+	}
+}
+
+@media (max-width: 359.98px) {
+	/* Very small phones (iPhone SE 1st gen and similar): logo only. */
+	.navbar-brand span {
+		display: none;
+	}
+}
+
+/* Comfortable touch targets in the collapsed menu. */
+@media (max-width: 991.98px) {
+	.ftco_navbar .navbar-nav > .nav-item > .nav-link {
+		padding-top: .75rem;
+		padding-bottom: .75rem;
+	}
+}
+
+
+/* --------------------------------------------------------------------------
+   3. Hero
+   The template pins .slider-text to 750px while main.js sets .js-fullheight
+   to the window height, so the photo overflowed the slide on tall phones.
+   -------------------------------------------------------------------------- */
+
+/* Fluid hero headline — was a fixed 40px/60px step. */
+.owl-carousel.home-slider .slider-item .slider-text h1 {
+	font-size: clamp(2rem, 8.5vw, 3.75rem);
+	line-height: 1.15;
+}
+
+/* Typing line: the template fixed it at 30px with white-space:nowrap and a
+   width keyframe, so "Software Engineer (Flutter)" was cut off on phones.
+   The JS already performs the typing; the CSS width animation only fought it. */
+#typing-animation {
+	display: inline-block;
+	max-width: 100%;
+	font-size: clamp(1.05rem, 5.2vw, 1.875rem);
+	line-height: 1.3;
+	white-space: normal;
+	overflow: visible;
+	animation: none;
+}
+
+@media (max-width: 991.98px) {
+
+	.owl-carousel.home-slider .slider-item .slider-text {
+		height: auto;
+		min-height: 100vh;
+		/* svh ignores the mobile URL bar, so the hero stops jumping on scroll */
+		min-height: 100svh;
+		/* .one-forth is absolutely positioned with inset 0. Without a positioned
+		   .slider-text it resolved against a further ancestor and kept the
+		   template's old 750px height, so the copy centred against the wrong
+		   box as soon as the slide height became fluid. */
+		position: relative;
+	}
+
+	.owl-carousel.home-slider .slider-item .slider-text .one-third,
+	.owl-carousel.home-slider .slider-item .slider-text .one-third.js-fullheight {
+		/* beats the inline height main.js writes */
+		height: 100% !important;
+		min-height: 100vh;
+		min-height: 100svh;
+	}
+
+	/* Hero copy sat directly on the face of the photo at 0.3 opacity.
+	   Darken the plate so the text keeps AA contrast. */
+	.owl-carousel.home-slider .slider-item .slider-text .one-third .overlay {
+		opacity: .62;
+	}
+}
+
+/* Short portrait phones: 100svh alone can be shorter than the hero copy, so
+   hold a floor. .one-forth stays absolutely positioned (it is the overlay that
+   sits on the photo) — only the slide's height floor changes here. */
+@media (max-width: 991.98px) and (max-height: 620px) and (orientation: portrait) {
+
+	.owl-carousel.home-slider .slider-item .slider-text,
+	.owl-carousel.home-slider .slider-item .slider-text .one-third,
+	.owl-carousel.home-slider .slider-item .slider-text .one-third.js-fullheight {
+		min-height: 540px;
+	}
+
+	.owl-carousel.home-slider .slider-item .slider-text .one-forth {
+		padding: 1.5rem 1em;
+	}
+}
+
+/* Landscape phones: width is generous but height is not, so size the hero from
+   the viewport height instead of its width and let it fit on one screen. */
+@media (orientation: landscape) and (max-height: 520px) {
+
+	.owl-carousel.home-slider .slider-item .slider-text,
+	.owl-carousel.home-slider .slider-item .slider-text .one-third,
+	.owl-carousel.home-slider .slider-item .slider-text .one-third.js-fullheight {
+		min-height: 360px;
+	}
+
+	.owl-carousel.home-slider .slider-item .slider-text h1 {
+		font-size: clamp(1.5rem, 9vh, 2.75rem);
+		margin-bottom: .5rem !important;
+	}
+
+	.owl-carousel.home-slider .slider-item .slider-text .one-forth {
+		padding: 1rem;
+	}
+
+	#typing-animation {
+		font-size: clamp(.95rem, 4.6vh, 1.4rem);
+		min-height: 0;
+	}
+
+	.owl-carousel.home-slider .slider-item .slider-text .text br {
+		display: none;
+	}
+}
+
+@media (max-width: 991.98px) {
+
+	/* Reserve two lines so the buttons below don't jump as text types. */
+	#typing-animation {
+		min-height: 2.6em;
+	}
+}
+
+/* Hero buttons stack cleanly instead of overflowing at <=360px. */
+.owl-carousel.home-slider .slider-item .slider-text .text p .btn {
+	margin-bottom: .5rem;
+}
+
+@media (max-width: 359.98px) {
+	.owl-carousel.home-slider .slider-item .slider-text .text p .btn {
+		display: block;
+		width: 100%;
+	}
+}
+
+
+/* --------------------------------------------------------------------------
+   4. Section headings
+   .big-4 combined a fixed 42px with transform: scaleX(1.2). The transform
+   painted 10% outside the element box on each side, which clipped
+   "Training & Publications" at the viewport edge.
+   -------------------------------------------------------------------------- */
+
+.big-4 {
+	font-size: clamp(1.75rem, 7vw, 2.625rem);
+	width: fit-content;
+	max-width: 100%;
+	margin: 0 auto;
+	text-align: center;
+	transform: none;
+	transform-origin: center;
+}
+
+@media (min-width: 768px) {
+
+	/* Enough room for the stretch without leaving the container. */
+	.big-4 {
+		transform: scaleX(1.15);
+	}
+}
+
+.heading-section h2 {
+	font-size: clamp(1.75rem, 6.5vw, 3.125rem);
+	line-height: 1.2;
+}
+
+/* The gradient divider was authored inside style.css's @media (min-width:768px)
+   block, so it never rendered below 768px. Restate it at the top level. */
+.underline {
+	display: block;
+	width: 100%;
+	height: 4px;
+	margin-top: 5px;
+	background-image: linear-gradient(to right,
+			rgb(255, 255, 255) 0%,
+			rgb(244, 244, 125) 20%,
+			rgb(238, 238, 36) 50%,
+			#0175C2 100%);
+	opacity: .5;
+}
+
+/* The oversized ghost heading is decorative; at phone widths it just collides
+   with the real heading. */
+@media (max-width: 575.98px) {
+	.heading-section h1.big {
+		font-size: 13vw;
+	}
+}
+
+
+/* --------------------------------------------------------------------------
+   5. About
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 575.98px) {
+
+	/* Full-bleed portrait at 12 columns was overwhelming. */
+	.ftco-about .about-img {
+		max-width: 230px;
+		margin: 0 auto 1.5rem;
+	}
+
+	.ftco-about .about-img img {
+		margin-left: 0;
+	}
+
+	.about-info p {
+		text-align: center;
+	}
+}
+
+/* The label column was pinned to 130px, leaving ~180px for values such as
+   "Flutter, BLoC, Riverpod, Provider, GetX, Clean Architecture". Stack them. */
+@media (max-width: 767.98px) {
+	.ftco-about ul.about-info li.d-flex {
+		display: block !important;
+		margin-bottom: 16px;
+	}
+
+	.ftco-about ul.about-info li span,
+	.ftco-about ul.about-info li span:first-child {
+		display: block;
+		width: 100%;
+	}
+
+	.ftco-about ul.about-info li span:first-child {
+		margin-bottom: 2px;
+	}
+}
+
+/* Skills: the percentage used the Bootstrap 3 class .pull-right (now
+   .float-right); give the row a clean two-column feel at every width. */
+.skill-mf .float-right {
+	color: #ffbd39;
+	font-weight: 600;
+}
+
+.skill-mf .progress {
+	width: 100%;
+}
+
+
+/* --------------------------------------------------------------------------
+   6. Resume
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 575.98px) {
+	.resume-wrap {
+		padding: 22px 18px;
+	}
+}
+
+.resume-wrap ul {
+	margin-bottom: 0;
+}
+
+
+/* --------------------------------------------------------------------------
+   7. Projects
+   Cards are col-sm-6 col-lg-4: 1 up on phones, 2 up on small/medium,
+   3 up from lg. Equal-height cards need the column to stretch.
+   -------------------------------------------------------------------------- */
+
+.blog-entry {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.blog-entry .text {
+	flex: 1 1 auto;
+}
+
+@media (max-width: 575.98px) {
+
+	/* Cards are full width here, so the 180px art felt letterboxed. */
+	.block-20 {
+		height: 220px;
+	}
+}
+
+/* The hover zoom scales the element itself, which can widen the layout.
+   Only run it on real pointers so it never sticks on touch. */
+@media (hover: hover) and (pointer: fine) {
+	.zoom-effect:hover {
+		transform: scale(1.06);
+	}
+}
+
+@media (hover: none) {
+	.zoom-effect:hover {
+		transform: none;
+	}
+}
+
+
+/* --------------------------------------------------------------------------
+   8. Counters / call to action
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 767.98px) {
+	.ftco-counter .counter-wrap {
+		margin-bottom: 1.5rem;
+	}
+
+	.ftco-hireme h2 {
+		font-size: clamp(1.6rem, 7vw, 2.5rem);
+	}
+
+	.ftco-hireme .heading h4 {
+		font-size: 1rem;
+		line-height: 1.6;
+	}
+}
+
+
+/* --------------------------------------------------------------------------
+   9. Contact & footer
+   -------------------------------------------------------------------------- */
+
+.contact-section .box {
+	width: 100%;
+}
+
+/* Long email/phone strings must wrap rather than widen the card. */
+.contact-section .box p,
+.contact-section .box a {
+	overflow-wrap: break-word;
+	word-break: break-word;
+}
+
+@media (max-width: 767.98px) {
+	.contact-section .contact-info > [class*="col-"] {
+		margin-bottom: 1.5rem;
+	}
+
+	.contact-section .contact-info > [class*="col-"]:last-child {
+		margin-bottom: 0;
+	}
+}
+
+/* 44px touch targets for the social icons. */
+.ftco-footer-social li a {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+}
+
+.ftco-footer-social {
+	gap: .25rem;
+}
+
+
+/* --------------------------------------------------------------------------
+   10. Motion
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+
+	*,
+	*::before,
+	*::after {
+		animation-duration: .001ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: .001ms !important;
+		scroll-behavior: auto !important;
+	}
+
+	.zoom-effect:hover {
+		transform: none;
+	}
+}
